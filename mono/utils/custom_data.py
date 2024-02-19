@@ -26,6 +26,8 @@ def load_from_annos(anno_path):
     return datas
 
 def load_data(path: str):
-    rgbs = glob.glob(path + '/*.jpg') + glob.glob(path + '/*.png')
+    from pathlib import Path
+    fps = Path(path).glob('*.jpg')
+    rgbs = [fp.resolve().as_posix() for fp in fps]
     data = [{'rgb':i, 'depth':None, 'intrinsic': None, 'filename':os.path.basename(i), 'folder': i.split('/')[-3]} for i in rgbs]
     return data

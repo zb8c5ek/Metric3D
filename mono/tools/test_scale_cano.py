@@ -141,7 +141,7 @@ def main_worker(local_rank: int, cfg: dict, launcher: str, test_data: list):
     # load ckpt
     model, _,  _, _ = load_ckpt(cfg.load_from, model, strict_match=False)
     model.eval()
-    
+    # TODO: use this function to load the data and hence test
     do_scalecano_test_with_custom_data(
         model, 
         cfg,

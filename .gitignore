@@ -4,3 +4,4 @@ show_dirs
 test_dataloader_*
 .idea
 weight
+3d_result
