@@ -16,7 +16,7 @@ LinkedIn: https://be.linkedin.com/in/xuanlichen
 import open3d as o3d
 import numpy as np
 import copy
-
+from pathlib import Path
 
 def draw_registration_result(source, target, transformation, fp_output=None):
     source_temp = copy.deepcopy(source)
@@ -30,14 +30,14 @@ print("Load two point clouds and show initial pose ...")
 # source = o3d.io.read_point_cloud(ply_data.paths[0])
 # target = o3d.io.read_point_cloud(ply_data.paths[1])
 
-source = o3d.io.read_point_cloud(r"D:\mono-metric-depth\MonoMetricOdometry\sample_data_2\3d_result\pcd\MonoMetricOdometry\frame-002985_1701313572850_fx_2038_fy_2038.ply")
-target = o3d.io.read_point_cloud(r"D:\mono-metric-depth\MonoMetricOdometry\sample_data_2\3d_result\pcd\MonoMetricOdometry\frame-002987_1701313572950_fx_2038_fy_2038.ply")
-
+source = o3d.io.read_point_cloud(r"D:\mono-metric-depth\MonoMetricOdometry\sample_data_3-sequential-mapping-video1-undistorted\3d_result\pcd\MonoMetricOdometry\frame-002992_1701313572850_distorted_fx_2038_fy_2038.ply")
+target = o3d.io.read_point_cloud(r"D:\mono-metric-depth\MonoMetricOdometry\sample_data_3-sequential-mapping-video1-undistorted\3d_result\pcd\MonoMetricOdometry\frame-002993_1701313572900_distorted_fx_2038_fy_2038.ply")
+fp_output = Path(r"D:\mono-metric-depth\MonoMetricOdometry\sample_data_3-sequential-mapping-video1-undistorted\3d_result\pcd\MonoMetricOdometry\frame-002992_1701313572850_distorted_fx_2038_fy_2038-warped.ply")
 # Filter points in source
 source_points = np.asarray(source.points)
 source_colors = np.asarray(source.colors)
 dist_xz = np.linalg.norm(source_points[:, [0, 2]], axis=1)  # Compute norm2 distance for x-z
-mask_source = (dist_xz > 50) | (source_points[:, 1] > 5)  # Create a mask for the conditions
+mask_source = (dist_xz > 70) | (source_points[:, 1] > 2.5) | (source_points[:, 1] < -7.5)  # Create a mask for the conditions
 source.points = o3d.utility.Vector3dVector(source_points[~mask_source])  # Apply the mask
 source.colors = o3d.utility.Vector3dVector(source_colors[~mask_source])  # Apply the mask to colors
 
@@ -45,7 +45,7 @@ source.colors = o3d.utility.Vector3dVector(source_colors[~mask_source])  # Apply
 target_points = np.asarray(target.points)
 target_colors = np.asarray(target.colors)
 dist_xz = np.linalg.norm(target_points[:, [0, 2]], axis=1)  # Compute norm2 distance for x-z
-mask_target = (dist_xz > 50) | (target_points[:, 1] > 5) #| (dist_xz < 25) # Create a mask for the conditions
+mask_target = (dist_xz > 70) | (source_points[:, 1] > 2.5) | (source_points[:, 1] < -7.5)
 target.points = o3d.utility.Vector3dVector(target_points[~mask_target])  # Apply the mask
 target.colors = o3d.utility.Vector3dVector(target_colors[~mask_target])  # Apply the mask to colors
 
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     target.paint_uniform_color([0, 0, 1])  # Blue
     draw_registration_result(
         source, target, result_icp.transformation,
-        fp_output=r"D:\mono-metric-depth\MonoMetricOdometry\sample_data_2/video_0_warped.ply"
+        fp_output=fp_output
     )
     print(current_transformation)
 
